@@ -93,6 +93,7 @@ function love.load()
     player1 = Paddle(10, 30, 5, 20)
     player2 = Paddle(VIRTUAL_WIDTH - 10, VIRTUAL_HEIGHT - 30, 5, 20)
 
+
     -- place a ball in the middle of the screen
     ball = Ball(VIRTUAL_WIDTH / 2 - 2, VIRTUAL_HEIGHT / 2 - 2, 4, 4)
 
@@ -229,26 +230,41 @@ function love.update(dt)
         end
     end
 
-    --
-    -- paddles can move no matter what state we're in
-    --
     -- player 1
     if love.keyboard.isDown('w') then
         player1.dy = -PADDLE_SPEED
     elseif love.keyboard.isDown('s') then
-        player1.dy = PADDLE_SPEED
+       player1.dy = PADDLE_SPEED
     else
-        player1.dy = 0
+       player1.dy = 0
     end
 
+  
     -- player 2
-    if love.keyboard.isDown('up') then
+    --[[if player2.dy > ball.y + 15 and player2.y > 0 then 
         player2.dy = -PADDLE_SPEED
-    elseif love.keyboard.isDown('down') then
+    elseif player2.dy < ball.y - 15 and player2.dy < (VIRTUAL_HEIGHT - 20) then
         player2.dy = PADDLE_SPEED
     else
         player2.dy = 0
-    end
+    end  ]]
+
+-- Make the ball bounce against the left paddle
+if ball.dx <= player2.dy + 15
+  and ball.dy > player2.dy
+  and ball.dy < player2.dy + 125
+  then
+  -- Bounce!
+  player2.dy = -PADDLE_SPEED
+elseif ball.dx >= player2.dy + 15
+  and ball.dy < player2.dy
+  and ball.dy > player2.dy + 125
+  then
+  player2.dy = PADDLE_SPEED 
+else
+  player2.dy = 0
+end
+
 
     -- update our ball based on its DX and DY only if we're in play state;
     -- scale the velocity by dt so movement is framerate-independent
@@ -340,7 +356,7 @@ function love.draw()
     ball:render()
 
     -- display FPS for debugging; simply comment out to remove
-    displayFPS()
+    -- displayFPS()
 
     -- end our drawing to push
     push:apply('end')
